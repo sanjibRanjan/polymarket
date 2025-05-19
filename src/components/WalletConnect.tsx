@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ConnectButton } from './ConnectButton';
 import { LogOut } from 'lucide-react';
-import { createLightAccountAlchemyClient } from '@alchemy/aa-alchemy';
-import { createLightAccount } from '@alchemy/aa-accounts';
+
 import { sepolia } from 'viem/chains';
 import { http, createPublicClient } from 'viem';
 import { formatEther } from 'viem/utils';
@@ -46,72 +45,6 @@ const WalletConnect: React.FC = () => {
     return null;
   };
 
-  // Load wallet from localStorage
-  useEffect(() => {
-    const storedKey = localStorage.getItem('walletPrivateKey');
-    const storedAddress = localStorage.getItem('walletAddress');
-
-    if (storedKey && storedAddress) {
-      const formattedAddress = `${storedAddress.slice(0, 6)}...${storedAddress.slice(-4)}`;
-      setWallet({
-        isConnected: true,
-        address: formattedAddress,
-        balance: 'Loading...'
-      });
-      initializeWallet(storedKey, storedAddress);
-    }
-  }, []);
-
-  const initializeWallet = async (privateKey: string, address: string) => {
-    try {
-      if (!ALCHEMY_API_KEY) {
-        throw new Error('Alchemy API key is not set. Please add it to your .env file.');
-      }
-      const chain = sepolia;
-
-      const lightAccount = await createLightAccount({
-        transport: http(`https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`),
-        chain,
-        privateKey: `0x${privateKey}`
-      });
-      console.log("lightAccount (initialize):", lightAccount);
-
-      const resolvedAddress = await getAddressFromAccount(lightAccount);
-      if (!resolvedAddress) {
-        throw new Error('Light account creation failed. Address not found.');
-      }
-
-      const alchemyClient = await createLightAccountAlchemyClient({
-        apiKey: ALCHEMY_API_KEY,
-        chain,
-        account: lightAccount
-      });
-
-      setClient(alchemyClient);
-      fetchBalance(resolvedAddress);
-    } catch (error) {
-      console.error('Error initializing wallet:', error);
-    }
-  };
-
-  const fetchBalance = async (address: string) => {
-    try {
-      const client = createPublicClient({
-        chain: sepolia,
-        transport: http(`https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`)
-      });
-
-      const balance = await client.getBalance({ address: address as `0x${string}` });
-      const formatted = formatEther(balance);
-
-      setWallet(prev => ({
-        ...prev,
-        balance: `${parseFloat(formatted).toFixed(4)} ETH`
-      }));
-    } catch (error) {
-      console.error('Error fetching balance:', error);
-    }
-  };
 
   const generatePrivateKey = (): string => {
     const randomBytes = new Uint8Array(32);
