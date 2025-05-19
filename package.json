@@ -12,10 +12,6 @@
   "dependencies": {
     "@account-kit/infra": "^4.34.1",
     "@account-kit/react": "^4.34.1",
-    "@alchemy/aa-accounts": "^3.19.0",
-    "@alchemy/aa-alchemy": "^3.19.0",
-    "@alchemy/aa-core": "^3.19.0",
-    "@alchemy/aa-ethers": "^3.19.0",
     "@tanstack/react-query": "^5.76.1",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
